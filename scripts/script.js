@@ -4,7 +4,7 @@
 //если id  не нужны, то не юзать лишний раз
 // массив для объявлений
 const dataBase =  JSON.parse(localStorage.getItem('awito')) || [];
-
+let counter = dataBase.length;
 const modalAdd = document.querySelector('.modal__add'), 
     addAd = document.querySelector('.add__ad'), 
     modalBtnSubmit = document.querySelector('.modal__btn-submit'),
@@ -16,6 +16,14 @@ const modalAdd = document.querySelector('.modal__add'),
     modalFileBtn = document.querySelector('.modal__file-btn'),
     modalImageAdd = document.querySelector('.modal__image-add');
 
+const modalImageItem = document.querySelector('.modal__image-item'),
+    modalHeaderItem = document.querySelector('.modal__header-item'),
+    modalStatusItem = document.querySelector('.modal__status-item'),
+    modalDescriptionItem = document.querySelector('.modal__description-item'),
+    modalCostItem = document.querySelector('.modal__cost-item');
+
+const searchInput = document.querySelector(".search__imput");
+
 const textFileBtn = modalFileBtn.textContent;
 const scrModalImage = modalImageAdd.src;
 
@@ -23,18 +31,16 @@ const elementsModalSubmit = [...modalSubmit.elements].filter(elem => elem.tagNam
  //... - спрет опператор - все что в квадратных скобках записать через ,
 //если обернуть в [] то получим массив 
     
+const infoPhoto = {};
+
+const saveDB = () => localStorage.setItem('awito', JSON.stringify(dataBase));
+
 const checkForm = () => {
     //валидация 
     const validForm = elementsModalSubmit.every(elem => elem.value);
     modalBtnSubmit.disabled = !validForm;
     modalBtnWarning.style.display = validForm ? 'none' : ''; //тернарная операция 
 }
-
-const infoPhoto = {};
-const saveDB = () => localStorage.setItem('awito' , JSON.stringify(dataBase));
-
-
-
 
     
 const closeModal = event => {
@@ -110,6 +116,7 @@ modalSubmit.addEventListener('submit', event => {
     for (const elem of elementsModalSubmit) {
         itemObject[elem.name] = elem.value;
     }
+    itemObject.id = counter++;
     itemObject.image64 = infoPhoto.base64;
     dataBase.push(itemObject);
     closeModal({target:modalAdd});
@@ -130,7 +137,13 @@ modalItem.addEventListener('click', closeModal);
 
 catalog.addEventListener('click', (event) => {
     const target = event.target;
-    if(target.closest('.card')){
+    const card = target.closest('.card');
+    if(card){
+        const item = dataBase.find(obj = > obj.id === +card.dataset.id);
+        //1.15.10 в видосе - доделать этот момент
+
+
+
         modalItem.classList.remove('hide');
         document.addEventListener('keydown', closeModal);
     }
